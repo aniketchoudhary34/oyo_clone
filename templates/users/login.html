@@ -1,0 +1,61 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OYO Clone</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+{% block content %}
+    <div class="container mt-5">
+    <h2 class="text-center mb-4">Login</h2>
+
+    <div class="col-md-4 mx-auto">
+        <input type="text" id="username" class="form-control mb-3" placeholder="Username">
+        <input type="password" id="password" class="form-control mb-3" placeholder="Password">
+
+
+        <button class="btn btn-primary w-100" onclick="login()">Login</button>
+    </div>
+    <div class="text-center mt-3">
+        <span> "do not have an account? <a href="/api/register-page/">Register</a></span>
+    </div>
+    <a href="http://127.0.0.1:8000/accounts/google/login/" class="btn btn-danger"> Continue with Google </a>
+</div> 
+<script>
+    async function login(){
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+        const response = await fetch("http://127.0.0.1:8000/api/token/",{
+            method: "POST",
+            headers:{
+                "content-type": "application/json"
+            },
+            body: JSON.stringify({
+                username:username,
+                password: 
+                password})  
+
+        });
+        const data = await response.json();
+        if(response.ok){
+            localStorage.setItem("access",data.access);
+            localStorage.setItem("refresh",data.refresh);
+            
+            window.location.href = "/api/dashboard/";
+        }else{
+            alert("Login failed: " );
+
+        
+        }
+        
+    }
+</script>
+{% endblock %}
+   
+
+</body>
+</html>
