@@ -1,0 +1,41 @@
+name: Django Deployment
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Deploy to EC2
+
+      uses: appleboy/ssh-action@master
+
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+
+        script: |
+
+          cd oyo_clone
+
+          git pull origin main
+
+          sudo docker build -t oyo-app .
+
+          sudo docker stop oyo-container || true
+
+          sudo docker rm oyo-container || true
+
+          sudo docker run -d -p 8000:8000 --name oyo-container oyo-app
+
+          sudo systemctl restart nginx
