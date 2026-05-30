@@ -21,16 +21,16 @@
         <button class="btn btn-primary w-100" onclick="login()">Login</button>
     </div>
     <div class="text-center mt-3">
-        <span> "do not have an account? <a href="/api/register-page/">Register</a></span>
+        <span> "Do not have an account? <a href="/api/register-page/">Register</a></span>
     </div>
-    <a href="http://32.199.137.90/accounts/google/login/" class="btn btn-danger"> 
+    <a href="/accounts/google/login/" class="btn btn-danger"> 
         Continue with Google </a>
 </div> 
 <script>
     async function login(){
         const username = document.getElementById("username").value;
         const password = document.getElementById("password").value;
-        const response = await fetch("http://32.199.137.90/api/token/",{
+        const response = await fetch("/api/token/",{
             method: "POST",
             headers:{
                 "content-type": "application/json"

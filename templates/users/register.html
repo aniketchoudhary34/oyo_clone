@@ -32,7 +32,7 @@
         const password = document.getElementById("password").value;
         const phone = document.getElementById("phone").value;
 
-        const response = await fetch("http://32.199.137.90/api/register/", {
+        const response = await fetch("/api/register/", {
             method: "POST",
             headers: {
                 "content-type": "application/json"

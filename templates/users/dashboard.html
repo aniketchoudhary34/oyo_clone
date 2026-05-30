@@ -20,24 +20,12 @@
     <!-- Cards -->
     <div class="row g-4">
 
-        <!-- Hotels -->
-        <div class="col-md-4">
-            <div class="card shadow-sm border-0 rounded-4 h-100">
+        <div class="card mt-4 shadow-sm border-0 rounded-4">
+            <div class="card-body">
+                <h5 class="fw-bold mb-3">Available Hotels</h5>
 
-                <div class="card-body">
-
-                    <h5 class="fw-bold">
-                        🏨 View Hotels
-                    </h5>
-
-                    <p class="text-muted">
-                        Browse available hotels and rooms.
-                    </p>
-
-                    <a href="/" class="btn btn-primary w-100">
-                        Explore Hotels
-                    </a>
-
+                <div id="hotelBox" class="row g-4">
+                    <p class="text-muted">Click “Explore Hotels” to load hotels.</p>
                 </div>
             </div>
         </div>
@@ -56,8 +44,7 @@
                         View your current and past bookings.
                     </p>
 
-                    <a href="/api/my-bookings-page/"
-                       class="btn btn-success w-100">
+                    <a href="/api/my-bookings-page/" class="btn btn-success w-100">
 
                         My Trips
                     </a>
@@ -80,8 +67,7 @@
                         Check your account details.
                     </p>
 
-                    <button class="btn btn-dark w-100"
-                            onclick="loadProfile()">
+                    <button class="btn btn-dark w-100" onclick="loadProfile()">
 
                         View Profile
                     </button>
@@ -111,52 +97,61 @@
 </div>
 
 <script>
+    async function loadHotels() {
+        const hotelBox = document.getElementById("hotelBox");
 
-async function loadProfile() {
+        hotelBox.innerHTML = `
+        <div class="text-muted">Loading hotels...</div>
+    `;
 
-    const token = localStorage.getItem("access");
+        const response = await fetch("/api/hotels/");
+        const hotels = await response.json();
 
-    if (!token) {
-
-        alert("Please login first");
-
-        window.location.href = "/api/login/";
-
-        return;
-    }
-
-    const response = await fetch("/api/profile/", {
-
-        headers: {
-            "Authorization": "Bearer " + token
-        }
-    });
-
-    const data = await response.json();
-
-    if (response.ok) {
-
-        document.getElementById("profileBox").innerHTML = `
-
-            <p><strong>ID:</strong> ${data.id}</p>
-
-            <p><strong>Username:</strong> ${data.username}</p>
-
-        `;
-
-    } else {
-
-        document.getElementById("profileBox").innerHTML = `
-
+        if (!response.ok) {
+            hotelBox.innerHTML = `
             <div class="alert alert-danger">
-                Unable to load profile
+                Unable to load hotels
             </div>
-
         `;
-    }
-}
+            return;
+        }
 
+        if (hotels.length === 0) {
+            hotelBox.innerHTML = `
+            <div class="text-muted">No hotels available.</div>
+        `;
+            return;
+        }
+
+        hotelBox.innerHTML = hotels.map(hotel => `
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden">
+
+                <img src="${hotel.image || 'https://via.placeholder.com/400x220?text=Hotel'}"
+                     class="card-img-top"
+                     style="height:220px; object-fit:cover;">
+
+                <div class="card-body">
+                    <h5 class="fw-bold">${hotel.name}</h5>
+
+                    <p class="text-muted mb-1">
+                        📍 ${hotel.location || 'Location not available'}
+                    </p>
+
+                    <p class="fw-bold text-success mb-3">
+                        ₹${hotel.price_per_night || hotel.price || 0} / night
+                    </p>
+
+                    <a href="/hotel-detail/${hotel.id}/"
+                       class="btn btn-dark w-100">
+                        View Details
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    `).join("");
+    }
 </script>
 
 {% endblock %}
-
